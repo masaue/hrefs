@@ -1,0 +1,36 @@
+{
+  "name": "hrefs",
+  "version": "1.0.0",
+  "description": "get href file(s).",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "babel-node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masasutzu/hrefs.git"
+  },
+  "author": "masaue <masayuki.uegaki@gmail.com> https://github.com/masasutzu",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/masasutzu/hrefs/issues"
+  },
+  "homepage": "https://github.com/masasutzu/hrefs#readme",
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "dependencies": {
+    "cheerio-httpcli": "^0.7.4",
+    "commander": "^4.1.1",
+    "fs-extra": "^8.1.0",
+    "got": "^10.6.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.8.7"
+  }
+}
