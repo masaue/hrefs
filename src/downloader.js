@@ -57,7 +57,7 @@ export default class Downloader {
     const removed = this._removeProtocol(url);
     const basename = path.basename(target);
     return phrase ? path.join(removed, phrase, basename) :
-                    path.join(removed, basename);
+                    path.join(removed, basename); // eslint-disable-line indent
   }
   
   static _mkdirs(to) {
@@ -72,14 +72,14 @@ export default class Downloader {
   
   static _targets(url) {
     return new Promise((resolve) => {
-      client.fetch(url, (err, $, res, body) => {
+      client.fetch(url, (_, $) => {
         const targets = [];
-        $('a').each(function(_) {
+        $('a').each(function() {
           targets.push($(this).attr('href'));
         });
         resolve(targets);
       });
-    })
+    });
   }
   
 }

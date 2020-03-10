@@ -23,7 +23,7 @@ import Downloader from './downloader';
     .option('--phrase <s>', 'specify included phrase')
     .parse(process.argv);
   if (program.args.length !== 1) {
-    program.outputHelp((txt) => { return colors.red(txt) });
+    program.outputHelp((txt) => { return colors.red(txt); });
     process.exit(1);
   }
   Downloader.run(program);

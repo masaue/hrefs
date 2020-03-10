@@ -4,8 +4,6 @@
  * @author masaue
  */
 
-import path from 'path';
-
 
 
 export default class Targets {
