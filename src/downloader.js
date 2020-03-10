@@ -24,7 +24,7 @@ export default class Downloader {
     const filtered = targets.filter(program.extension, program.phrase);
     let skipCount = 0;
     filtered.forEach((target) => {
-      const downloadUrl = path.join(url, target);
+      const downloadUrl = this._downloadUrl(url, target);
       const downloadTo = this._downloadTo(url, program.phrase, target);
       if (fse.pathExistsSync(downloadTo)) {
         console.log(`skip downloading '${downloadUrl}', ` +
@@ -58,6 +58,18 @@ export default class Downloader {
     const basename = path.basename(target);
     return phrase ? path.join(removed, phrase, basename) :
                     path.join(removed, basename); // eslint-disable-line indent
+  }
+  
+  static _downloadUrl(url, target) {
+    if (this._httpProtocol(target)) {
+      return target;
+    }
+    const dirname = path.extname(url) === '' ? url : path.dirname(url);
+    return path.join(dirname, target);
+  }
+  
+  static _httpProtocol(target) {
+    return /^https?:\/\//.test(target);
   }
   
   static _mkdirs(to) {
