@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/masasutzu/hrefs.git"
+    "url": "git+https://github.com/masaue/hrefs.git"
   },
-  "author": "masaue <masayuki.uegaki@gmail.com> https://github.com/masasutzu",
+  "author": "masaue <masayuki.uegaki@gmail.com> https://github.com/masaue",
   "license": "GPLv3",
   "bugs": {
-    "url": "https://github.com/masasutzu/hrefs/issues"
+    "url": "https://github.com/masaue/hrefs/issues"
   },
-  "homepage": "https://github.com/masasutzu/hrefs#readme",
+  "homepage": "https://github.com/masaue/hrefs#readme",
   "babel": {
     "presets": [
       "@babel/preset-env"
