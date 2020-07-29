@@ -14,8 +14,12 @@ export default class Targets {
   
   filter(extensionsString, phrase) {
     const filtered = this._targets.filter((target) => {
+      // got undefined at https://www.riulynrpg.info/g-l/
+      if (!target) {
+        return false;
+      }
       return extensionsString.split(',').some((extension) => {
-        return target && target.endsWith(`.${extension}`);
+        return target.endsWith(`.${extension}`);
       });
     });
     return phrase ? filtered.filter((target) => {

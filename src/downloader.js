@@ -6,7 +6,6 @@
 
 import { promisify } from 'util';
 import client from 'cheerio-httpcli';
-import fs from 'fs';
 import fse from 'fs-extra';
 import got from 'got';
 import path from 'path';
@@ -49,7 +48,7 @@ export default class Downloader {
     const pipeline = promisify(stream.pipeline);
     await pipeline(
       got.stream(url),
-      fs.createWriteStream(to)
+      fse.createWriteStream(to)
     );
   }
   
