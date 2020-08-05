@@ -16,19 +16,19 @@ export default class Targets {
   }
   
   async filter(extensionsString, phrase) {
-    const isTargetResults = await Promise.all(this._targets.map((target) => {
+    const filtered = phrase ? this._targets.filter((target) => {
+      return new RegExp(phrase).test(target);
+    }) : this._targets;
+    const isTargetResults = await Promise.all(filtered.map((target) => {
       // got undefined at https://www.riulynrpg.info/g-l/
       if (!target) {
         return false;
       }
       return this._isTarget(target, extensionsString);
     }));
-    const filtered = this._targets.filter((_, i) => {
+    return filtered.filter((_, i) => {
       return isTargetResults[i];
     });
-    return phrase ? filtered.filter((target) => {
-      return new RegExp(phrase).test(target);
-    }) : filtered;
   }
   
   async _hasPdfMagicNumber(target) {
