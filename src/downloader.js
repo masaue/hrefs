@@ -12,6 +12,7 @@ import path from 'path';
 import stream from 'stream';
 
 import Targets from './targets';
+import { downloadUrl } from './utils';
 
 
 
@@ -19,24 +20,24 @@ export default class Downloader {
   
   static async run(program) {
     const url = program.args[0];
-    const targets = new Targets(await this._targets(url));
-    const filtered = targets.filter(program.extension, program.phrase);
+    const targets = new Targets(await this._targets(url), url);
+    const filtered = await targets.filter(program.extension, program.phrase);
     let skipCount = 0;
     filtered.forEach((target) => {
-      const downloadUrl = this._downloadUrl(url, target);
+      const targetUrl = downloadUrl(url, target);
       const downloadTo = this._downloadTo(url, program.phrase, target);
       if (fse.pathExistsSync(downloadTo)) {
-        console.log(`skip downloading '${downloadUrl}', ` +
+        console.log(`skip downloading '${targetUrl}', ` +
                     `'${downloadTo}' is already exists`);
         skipCount++;
         return;
       }
-      console.log(`download '${downloadUrl}' to '${downloadTo}'`);
+      console.log(`download '${targetUrl}' to '${downloadTo}'`);
       if (!program.dry) {
         this._mkdirs(path.dirname(downloadTo));
         // TODO progressbar
         console.log('downloading...');
-        this._download(downloadUrl, downloadTo);
+        this._download(targetUrl, downloadTo);
       }
     });
     console.log(`downloaded ${filtered.length - skipCount} file(s)`);
@@ -57,18 +58,6 @@ export default class Downloader {
     const basename = path.basename(target);
     return phrase ? path.join(removed, phrase, basename) :
                     path.join(removed, basename); // eslint-disable-line indent
-  }
-  
-  static _downloadUrl(url, target) {
-    if (this._httpProtocol(target)) {
-      return target;
-    }
-    const dirname = path.extname(url) === '' ? url : path.dirname(url);
-    return path.join(dirname, target);
-  }
-  
-  static _httpProtocol(target) {
-    return /^https?:\/\//.test(target);
   }
   
   static _mkdirs(to) {
