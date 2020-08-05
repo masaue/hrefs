@@ -12,7 +12,6 @@ import path from 'path';
 import stream from 'stream';
 
 import Targets from './targets';
-import { downloadUrl } from './utils';
 
 
 
@@ -24,20 +23,19 @@ export default class Downloader {
     const filtered = await targets.filter(program.extension, program.phrase);
     let skipCount = 0;
     filtered.forEach((target) => {
-      const targetUrl = downloadUrl(url, target);
       const downloadTo = this._downloadTo(url, program.phrase, target);
       if (fse.pathExistsSync(downloadTo)) {
-        console.log(`skip downloading '${targetUrl}', ` +
+        console.log(`skip downloading '${target}', ` +
                     `'${downloadTo}' is already exists`);
         skipCount++;
         return;
       }
-      console.log(`download '${targetUrl}' to '${downloadTo}'`);
+      console.log(`download '${target}' to '${downloadTo}'`);
       if (!program.dry) {
         this._mkdirs(path.dirname(downloadTo));
         // TODO progressbar
         console.log('downloading...');
-        this._download(targetUrl, downloadTo);
+        this._download(target, downloadTo);
       }
     });
     console.log(`downloaded ${filtered.length - skipCount} file(s)`);
@@ -75,7 +73,7 @@ export default class Downloader {
       client.fetch(url, (_, $) => {
         const targets = [];
         $('a').each(function() {
-          targets.push($(this).attr('href'));
+          targets.push($(this).url());
         });
         resolve(targets);
       });

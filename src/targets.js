@@ -6,8 +6,6 @@
 
 import got from 'got';
 
-import { downloadUrl } from './utils';
-
 
 
 export default class Targets {
@@ -35,7 +33,7 @@ export default class Targets {
   
   async _hasPdfMagicNumber(target) {
     try {
-      const { body } = await got(downloadUrl(this._url, target));
+      const { body } = await got(target);
       return body.slice(0, 5) === '%PDF-';
     }
     catch (e) {
