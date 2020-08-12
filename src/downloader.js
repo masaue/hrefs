@@ -21,27 +21,35 @@ export default class Downloader {
     const url = program.args[0];
     const targets = new Targets(await this._targets(url), url);
     const filtered = await targets.filter(program.extension, program.phrase);
+    const downloadTo = await Promise.all(filtered.map((target) => {
+      return this._downloadTo(url, program.phrase, target);
+    }));
     let skipCount = 0;
-    filtered.forEach((target) => {
-      const downloadTo = this._downloadTo(url, program.phrase, target);
-      if (fse.pathExistsSync(downloadTo)) {
+    filtered.forEach((target, index) => {
+      if (fse.pathExistsSync(downloadTo[index])) {
         console.log(`skip downloading '${target}', ` +
-                    `'${downloadTo}' is already exists`);
+                    `'${downloadTo[index]}' is already exists`);
         skipCount++;
         return;
       }
-      console.log(`download '${target}' to '${downloadTo}'`);
+      console.log(`download '${target}' to '${downloadTo[index]}'`);
       if (!program.dry) {
-        this._mkdirs(path.dirname(downloadTo));
+        this._mkdirs(path.dirname(downloadTo[index]));
         // TODO progressbar
         console.log('downloading...');
-        this._download(target, downloadTo);
+        this._download(target, downloadTo[index]);
       }
     });
     console.log(`downloaded ${filtered.length - skipCount} file(s)`);
   }
   
   
+  
+  static async _basename(target) {
+    const basename = path.basename(target);
+    // test for https://www.ninsheetmusic.org/
+    return /^\d+$/.test(basename) ? await this._filename(target) : basename;
+  }
   
   static async _download(url, to) {
     const pipeline = promisify(stream.pipeline);
@@ -51,11 +59,22 @@ export default class Downloader {
     );
   }
   
-  static _downloadTo(url, phrase, target) {
+  static async _downloadTo(url, phrase, target) {
     const removed = this._removeProtocol(url);
-    const basename = path.basename(target);
+    const basename = await this._basename(target);
     return phrase ? path.join(removed, phrase, basename) :
                     path.join(removed, basename); // eslint-disable-line indent
+  }
+  
+  static async _filename(target) {
+    const { headers } = await got(target, { method: 'HEAD' });
+    const dispositions = headers['content-disposition'].split(/\s*;\s*/);
+    const regexp = /^filename="(.+)"$/;
+    const filename = dispositions.find((disposition) => {
+      return regexp.test(disposition);
+    }).replace(regexp, '$1');
+    const [ dirname ] = filename.split(/\s*-\s*/);
+    return path.join(dirname, filename);
   }
   
   static _mkdirs(to) {
